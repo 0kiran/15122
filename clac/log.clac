@@ -1,0 +1,4 @@
+: d 1 pick ;
+: log0 2 / swap 1 + swap base ;
+: base d 2 < if drop 1 skip log0 ;
+: log 0 swap base ;

@@ -1,0 +1,23 @@
+: noop ;
+: dup 1 pick ; 
+: initDiviser 2 swap ;
+: increDiviser swap 1 + swap ;
+: copyPair swap dup rot dup rot swap ;
+: notDivisible lessThan if noop 2 skip 7 skip copyPair swap % if noop 3 skip 0 1 skip 1 ; 
+: lessThan copyPair < ;
+: isGreater copyPair < if 0 1 skip 1 ;
+: primemain isGreater if 1 10 skip notDivisible if noop 3 skip 0 2 skip increDiviser primemain ;
+: isPrime initDiviser primemain rot drop ;
+
+
+: switchMinus copyPair swap - ;
+: isTwin lessThan if switchMinus 2 skip copyPair - 2 - if 0 1 skip 1 ;
+: isTwinPrime isTwin if noop 3 skip 0 1 skip bothPrime ;
+: bothPrime isPrime rot isPrime rot + 2 - if 0 1 skip 1 ;
+
+
+: comment S, a, b ===> ;
+: if a,b is twin primes: ;
+:       S,a,b,1 ; 
+: else: S,a,b,0 ;
+: Note: 2 and 3 is a pair of twin prime but my code ignore is special case ;

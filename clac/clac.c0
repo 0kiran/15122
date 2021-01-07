@@ -1,0 +1,427 @@
+/*
+ * Clac, stack-based calculator language
+ *
+ * 15-122 Principles of Imperative Computation
+ */
+
+#use <string>
+#use <parse>
+#use <conio>
+#use <args>
+#use <util>
+
+/* From the perspective of the clac-main.c0 file, state_t is an
+ * abstract type. (typedef ____* state_t) This file contains the
+ * implementation of the state_t type. You will add new fields to this
+ * struct when you do task 4. */
+struct state_header {
+  /* Nothing in here initially */
+  dict_t dict;
+  qstack_t returnqueue; 
+};
+typedef struct state_header* state_t;
+state_t init_state()
+//@ensures \result != NULL;
+{
+  state_t statehead = alloc(struct state_header);
+  statehead->dict = dict_new();
+  statehead->returnqueue = qstack_new();
+  return statehead;
+}
+
+int pow(int x, int y) 
+{ 
+  int n; 
+  if(y == 0){
+    return 1; 
+  }
+  n = pow(x, y/2);        
+  if (y%2 == 0){
+    return n*n; 
+  }
+  else { 
+    if(y > 0) {
+      return x*n*n; 
+    }
+    else{
+      return (n*n)/x; 
+    }
+  } 
+}
+
+   
+/* Main clac interpreter. */
+/* Return true: clac top-level interpreter will expect more input */
+/* Return false: clac top-level interpreter will exit */
+bool eval(queue_t Q, stack_t S, state_t ST)
+//@requires Q != NULL && S != NULL && ST != NULL;
+//@ensures \result == false || queue_empty(Q);
+{
+  while ((!queue_empty(Q) && Q != NULL) || !qstack_empty(ST->returnqueue)) {
+    if(queue_empty(Q) && !qstack_empty(ST->returnqueue)){
+      queue_t fromqstack = queue_read_only_copy(qpop(ST->returnqueue));
+
+      while(!queue_empty(fromqstack)){
+        enq(Q, deq(fromqstack));
+      }
+    }
+    string tok = "";
+    if(!queue_empty(Q)) tok = deq(Q);
+    else return true; 
+    /* Is this dequeue safe? */
+    // Uncommenting these lines might help with debugging:
+    //print("Read: "); print(tok); print("\n");
+    if (string_equal(tok, "print")) {
+      if(stack_empty(S)){
+        error("cannot print from empty stack");
+      }
+      else{
+        int x = pop(S); /* This line is unsafe and must be fixed! */
+        printint(x); print("\n");
+      }
+    } 
+    
+    //quit implementation
+    else if (string_equal(tok, "quit")) {
+      return false;
+    } 
+    
+    //addition implementation
+    else if (string_equal(tok, "+")){
+      if(stack_empty(S)){
+        error("cannot add empty stack");
+      }
+      else{
+        int add1 = pop(S);
+        if(stack_empty(S)){
+          error("only one additive");
+        }
+        else{
+          int add2 = pop(S);
+          push(S, add1+add2);
+        }
+      }
+    } 
+    
+    //subtraction implementation
+    else if(string_equal(tok, "-")) {
+      if(stack_empty(S)){
+        error("cannot subtract empty stack");
+      }
+      else{
+        int sub1 = pop(S);
+        if(stack_empty(S)){
+          error("only one subtraction element");
+        }
+        else{
+          int sub2 = pop(S);
+          push(S, sub2-sub1);
+        }
+      }
+    } 
+    
+    //multiplication implementation
+    else if(string_equal(tok, "*")){
+      if(stack_empty(S)){
+        error("cannot mult. empty stack");
+      }
+      else{
+        int mult1 = pop(S);
+        if(stack_empty(S)){
+          error("only one factor");
+        }
+        else{
+          int mult2 = pop(S);
+          push(S, mult1*mult2);
+        }
+      }
+    } 
+    
+    //pow implementation (helper function used)
+    else if (string_equal(tok, "**")){
+      if(stack_empty(S)){
+        error("cannot pow. empty stack");
+      }
+      else{
+        int pow1 = pop(S);
+        if(stack_empty(S)){
+          error("only one pow factor");
+        }
+        else{
+          int pow2 = pop(S);
+          push(S, pow(pow2,pow1));
+        }
+      }
+                
+    } 
+    
+    //division implementation
+    else if(string_equal(tok, "/")){
+      if(stack_empty(S)){
+        error("cannot div. empty stack");
+      }
+      else{
+        int div1 = pop(S);
+        if(stack_empty(S)){
+          error("only one divisor");
+        }
+        else{
+          int div2 = pop(S);
+          if(div1 == 0){
+            error("div by 0");
+          }
+          if(div1 == -1 && div2 == int_min()) {
+            error("int min division");
+          }
+          else{
+            push(S, div2/div1);
+          }
+        }
+      }
+    } 
+    
+
+    //mod implementation
+    else if(string_equal(tok, "%")){
+      if(stack_empty(S)){
+        error("cannot mod. empty stack");
+      }
+      else{
+        int mod1 = pop(S);
+        if(stack_empty(S)){
+          error("only one mod thingy");
+        }
+        else{
+          int mod2 = pop(S);
+          if(mod1 == 0){
+            error("mod by 0");
+          }
+          if(mod1 == -1 && mod2 == int_min()) {
+            error("int min division");
+          }
+          else{
+            push(S, mod2%mod1);
+          } 
+        }
+      }
+    } 
+    
+    //less than implentation
+    else if(string_equal(tok, "<")){
+      if(stack_empty(S)){
+        error("cannot compare empty stack");
+      }
+      else{
+        int less1 = pop(S);
+        if(stack_empty(S)){
+          error("only one number to compare");
+        }
+        else{
+          int less2 = pop(S);
+          if(less2 < less1 ) {
+            push(S,1);
+          }
+          else{
+            push(S, 0);
+          } 
+        }
+      } 
+    } 
+    
+    //drop implementation
+    else if(string_equal(tok, "drop")){
+      if(stack_empty(S)){
+        error("cant drop empty stack");      
+      }
+      else {
+        pop(S);
+      }
+    } 
+    
+    //swap implementation
+    else if(string_equal(tok, "swap")){
+      if(stack_empty(S)){
+        error("cant swap empty stack");
+      } 
+      else {
+        int s1 = pop(S);
+        if(stack_empty(S)){
+          error("only one swap thingy");
+        }
+        else {
+          int s2 = pop(S);
+          push(S, s1);
+          push(S, s2);
+        }
+      }
+    } 
+    
+    //rot implementation
+    else if(string_equal(tok, "rot")){
+      if(stack_empty(S)){
+        error("empty rot");
+      }
+      else{
+        int r1 = pop(S);
+        if(stack_empty(S)){
+          error("one unit rot");
+        }
+        else{
+          int r2 = pop(S);
+          if(stack_empty(S)){
+            error("two unit rot");
+          }
+          else{
+            int r3 = pop(S);
+            push(S, r2);
+            push(S, r1);
+            push(S, r3);
+          }
+        }
+      }
+    
+    } 
+    
+    //if implementation
+    else if(string_equal(tok, "if")){
+      if(stack_empty(S)){
+        error("empty if");
+      }
+      else{
+        int iff = pop(S);
+        if(iff == 0){
+          if(queue_empty(Q)){
+            error("not enough inputs");
+          }
+          else{
+            deq(Q);
+            if(queue_empty(Q)){
+              error("not enough inputs");
+            }
+            else{
+              deq(Q);
+              if(queue_empty(Q)){
+                error("not enough inputs");
+              }
+              else{
+                deq(Q);
+              }
+            }
+          }
+        }
+      }
+    } 
+    
+    //pick implementation
+    else if(string_equal(tok, "pick")){
+      if(stack_empty(S)){
+        error("no pick element");
+      }
+      else{
+        int p = pop(S);
+        if(p <= 0){
+          error("pick value must be positive");
+        }
+        else{
+          int count = 0;
+          int num = 0;
+          stack_t temp = stack_new();
+          while(!stack_empty(S) && count < p){
+            num = pop(S);
+            push(temp, num);
+            count++;
+          }
+          while(!stack_empty(temp)){
+            push(S, pop(temp));
+          }
+          if(count != p){
+            error("stack too small");
+          }
+          push(S,num);
+        }
+      }
+    } 
+    
+    //skip implementation
+    else if(string_equal(tok, "skip")){
+      if(stack_empty(S)){
+        error("empty skip");
+      }
+      else{
+        int n = pop(S);
+        if(n >= 0){
+          int c = 0;
+          while(!queue_empty(Q) && c < n){
+            deq(Q);
+            c++;
+          }
+          if(c != n){
+            error("not enough queue elements");
+          }
+        }
+        else {
+          error("skip must be positive");
+        }
+      }
+    } 
+    
+    //new function definitions
+    else if(string_equal(tok, ":")){
+      if(queue_empty(Q)){
+        error("no name specified");
+      }
+      else {
+        string name = deq(Q);
+        string d = "";
+        queue_t def = queue_new();
+        while(!queue_empty(Q) && !string_equal(d, ";")){
+          d = deq(Q);
+          if(!string_equal(d,";")) enq(def, d);
+        }
+        if(!string_equal(d, ";")){
+          error("def never ends");
+        }
+        else{
+          dict_insert(ST->dict, name, def);
+          println(string_join("defined ", name));
+        }
+      }
+    } 
+    
+    else {
+      /* Not defined as an operation name, should be an int */
+      int* p = parse_int(tok, 10);
+      if (p == NULL) { /* not an int */
+         if(dict_lookup(ST->dict, tok) != NULL){
+           //move a queue with extra stuff to the return stack
+           queue_t qcopy = queue_read_only_copy(Q);
+           if(!queue_empty(qcopy)){
+             qpush(ST->returnqueue, qcopy);
+           }
+           while(!queue_empty(Q)){
+             deq(Q);
+           }
+           
+           //copies the dictionary def into Q
+           queue_t ddef = queue_read_only_copy(dict_lookup(ST->dict, tok));
+           while(!queue_empty(ddef)){
+             string deqddef = deq(ddef);
+             enq(Q, deqddef);
+           }
+         }
+         else{          
+           /* call error(msg) which prints msg and aborts */
+           error(string_join("undefined token ", tok));
+         }
+      }
+      else {
+        push(S, *p);
+      }
+    }
+  }
+
+  /* When you return "true", don't pop anything off the stack! When we
+   * grade your function, we'll check that the stack contains the
+   * integers we expect. */
+  return true;
+}

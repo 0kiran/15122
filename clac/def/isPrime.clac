@@ -1,0 +1,12 @@
+: noop ;
+: dup 1 pick ; 
+: initDiviser 2 swap ;
+: increDiviser swap 1 + swap ;
+: copyPair swap dup rot dup rot swap ;
+: notDivisible lessThan if noop 2 skip 7 skip copyPair swap % if noop 3 skip 0 1 skip 1 ; 
+: lessThan copyPair < ;
+: isGreater copyPair < if 0 1 skip 1 ;
+: primemain isGreater if 1 10 skip notDivisible if noop 3 skip 0 2 skip increDiviser primemain ;
+: isPrime initDiviser primemain rot drop ;
+
+: comment S, a ===> if a is prime: S,a,1   else: S,a,0 ;
