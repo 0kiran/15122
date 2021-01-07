@@ -1,0 +1,62 @@
+#use <string>
+#use <conio>
+#use <parse>
+
+
+struct temp {
+  int i;
+  char c;
+  char[] arr_c;
+  string s;
+  int[] arr_i;
+};
+
+
+
+int test(int x) {
+  return x+1;
+}
+
+
+
+int factorial(int n) {
+  if (n == 0) return 1;
+  else return n * factorial(n-1);
+}
+
+int main(){
+  int[] test = alloc_array(int, 10);
+  test[3] = 10;
+  struct temp *testing = alloc(struct temp);
+  testing->i = 1000;
+  testing->c = 'c';
+  testing->arr_c = alloc_array(char, 10);
+  testing->arr_c[0] = 'c';
+  testing->arr_c[1] = 'a';
+  testing->arr_c[2] = 'r';
+  testing->s = "hello world!";
+  testing->arr_i = alloc_array(int, 20);
+  testing->arr_i[0] = 1;
+  testing->arr_i[1] = 1;
+  for (int i = 2; i < 20; i++) {
+    testing->arr_i[i] = testing->arr_i[i-1] + testing->arr_i[i-2];
+  }
+  printint(testing->i);
+  print("\nprinting c: ");
+  printchar(testing->c);
+  println("");
+  println(string_from_chararray(testing->arr_c));
+  println(testing->s);
+  print("[");
+  printint(testing->arr_i[0]);
+  for (int i = 1; i < 20; i++) {
+    print(", ");
+    printint(testing->arr_i[i]);
+  }
+  testing->arr_i = alloc_array(int, 1000000);
+  testing->arr_i[999999] = 99999999;
+  println("]");
+
+
+  return 0;
+}

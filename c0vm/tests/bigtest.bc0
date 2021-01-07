@@ -1,0 +1,252 @@
+C0 C0 FF EE       # magic number
+00 13             # version 9, arch = 1 (64 bits)
+
+00 04             # int pool count
+# int pool
+00 00 03 E8
+00 0F 42 40
+00 0F 42 3F
+05 F5 E0 FF
+
+00 23             # string pool total size
+# string pool
+68 65 6C 6C 6F 20 77 6F 72 6C 64 21 00  # "hello world!"
+0A 70 72 69 6E 74 69 6E 67 20 63 3A 20 00  # "\nprinting c: "
+00  # ""
+5B 00  # "["
+2C 20 00  # ", "
+5D 00  # "]"
+
+00 03             # function count
+# function_pool
+
+#<main>
+00 00             # number of arguments = 0
+00 03             # number of local variables = 3
+01 42             # code length = 322 bytes
+10 0A    # bipush 10       # 10
+BC 04    # newarray 4      # alloc_array(int, 10)
+36 00    # vstore 0        # test = alloc_array(int, 10);
+15 00    # vload 0         # test
+10 03    # bipush 3        # 3
+63       # aadds           # &test[3]
+10 0A    # bipush 10       # 10
+4E       # imstore         # test[3] = 10;
+BB 20    # new 32          # alloc(struct temp)
+36 01    # vstore 1        # testing = alloc(struct temp);
+15 01    # vload 1         # testing
+62 00    # aaddf 0         # &testing->i
+13 00 00 # ildc 0          # c[0] = 1000
+4E       # imstore         # testing->i = 1000;
+15 01    # vload 1         # testing
+62 04    # aaddf 4         # &testing->c
+10 63    # bipush 99       # 'c'
+55       # cmstore         # testing->c = 'c';
+15 01    # vload 1         # testing
+62 08    # aaddf 8         # &testing->arr_c
+10 0A    # bipush 10       # 10
+BC 01    # newarray 1      # alloc_array(char, 10)
+4F       # amstore         # testing->arr_c = alloc_array(char, 10);
+15 01    # vload 1         # testing
+62 08    # aaddf 8         # &testing->arr_c
+2F       # amload          # testing->arr_c
+10 00    # bipush 0        # 0
+63       # aadds           # &testing->arr_c[0]
+10 63    # bipush 99       # 'c'
+55       # cmstore         # testing->arr_c[0] = 'c';
+15 01    # vload 1         # testing
+62 08    # aaddf 8         # &testing->arr_c
+2F       # amload          # testing->arr_c
+10 01    # bipush 1        # 1
+63       # aadds           # &testing->arr_c[1]
+10 61    # bipush 97       # 'a'
+55       # cmstore         # testing->arr_c[1] = 'a';
+15 01    # vload 1         # testing
+62 08    # aaddf 8         # &testing->arr_c
+2F       # amload          # testing->arr_c
+10 02    # bipush 2        # 2
+63       # aadds           # &testing->arr_c[2]
+10 72    # bipush 114      # 'r'
+55       # cmstore         # testing->arr_c[2] = 'r';
+15 01    # vload 1         # testing
+62 10    # aaddf 16        # &testing->s
+14 00 00 # aldc 0          # s[0] = "hello world!"
+4F       # amstore         # testing->s = "hello world!";
+15 01    # vload 1         # testing
+62 18    # aaddf 24        # &testing->arr_i
+10 14    # bipush 20       # 20
+BC 04    # newarray 4      # alloc_array(int, 20)
+4F       # amstore         # testing->arr_i = alloc_array(int, 20);
+15 01    # vload 1         # testing
+62 18    # aaddf 24        # &testing->arr_i
+2F       # amload          # testing->arr_i
+10 00    # bipush 0        # 0
+63       # aadds           # &testing->arr_i[0]
+10 01    # bipush 1        # 1
+4E       # imstore         # testing->arr_i[0] = 1;
+15 01    # vload 1         # testing
+62 18    # aaddf 24        # &testing->arr_i
+2F       # amload          # testing->arr_i
+10 01    # bipush 1        # 1
+63       # aadds           # &testing->arr_i[1]
+10 01    # bipush 1        # 1
+4E       # imstore         # testing->arr_i[1] = 1;
+10 02    # bipush 2        # 2
+36 02    # vstore 2        # i = 2;
+# <03:loop>
+15 02    # vload 2         # i
+10 14    # bipush 20       # 20
+A1 00 06 # if_icmplt +6    # if (i < 20) goto <04:body>
+A7 00 2F # goto +47        # goto <05:exit>
+# <04:body>
+15 01    # vload 1         # testing
+62 18    # aaddf 24        # &testing->arr_i
+2F       # amload          # testing->arr_i
+15 02    # vload 2         # i
+63       # aadds           # &testing->arr_i[i]
+15 01    # vload 1         # testing
+62 18    # aaddf 24        # &testing->arr_i
+2F       # amload          # testing->arr_i
+15 02    # vload 2         # i
+10 01    # bipush 1        # 1
+64       # isub            # (i - 1)
+63       # aadds           # &testing->arr_i[(i - 1)]
+2E       # imload          # testing->arr_i[(i - 1)]
+15 01    # vload 1         # testing
+62 18    # aaddf 24        # &testing->arr_i
+2F       # amload          # testing->arr_i
+15 02    # vload 2         # i
+10 02    # bipush 2        # 2
+64       # isub            # (i - 2)
+63       # aadds           # &testing->arr_i[(i - 2)]
+2E       # imload          # testing->arr_i[(i - 2)]
+60       # iadd            # (testing->arr_i[(i - 1)] + testing->arr_i[(i - 2)])
+4E       # imstore         # testing->arr_i[i] = (testing->arr_i[(i - 1)] + testing->arr_i[(i - 2)]);
+15 02    # vload 2         # i
+10 01    # bipush 1        # 1
+60       # iadd            # 
+36 02    # vstore 2        # i += 1;
+A7 FF CD # goto -51        # goto <03:loop>
+# <05:exit>
+15 01    # vload 1         # testing
+62 00    # aaddf 0         # &testing->i
+2E       # imload          # testing->i
+B7 00 00 # invokenative 0  # printint(testing->i)
+57       # pop             # (ignore result)
+14 00 0D # aldc 13         # s[13] = "\nprinting c: "
+B7 00 01 # invokenative 1  # print("\nprinting c: ")
+57       # pop             # (ignore result)
+15 01    # vload 1         # testing
+62 04    # aaddf 4         # &testing->c
+34       # cmload          # testing->c
+B7 00 02 # invokenative 2  # printchar(testing->c)
+57       # pop             # (ignore result)
+14 00 1B # aldc 27         # s[27] = ""
+B7 00 03 # invokenative 3  # println("")
+57       # pop             # (ignore result)
+15 01    # vload 1         # testing
+62 08    # aaddf 8         # &testing->arr_c
+2F       # amload          # testing->arr_c
+B7 00 04 # invokenative 4  # string_from_chararray(testing->arr_c)
+B7 00 03 # invokenative 3  # println(string_from_chararray(testing->arr_c))
+57       # pop             # (ignore result)
+15 01    # vload 1         # testing
+62 10    # aaddf 16        # &testing->s
+2F       # amload          # testing->s
+B7 00 03 # invokenative 3  # println(testing->s)
+57       # pop             # (ignore result)
+14 00 1C # aldc 28         # s[28] = "["
+B7 00 01 # invokenative 1  # print("[")
+57       # pop             # (ignore result)
+15 01    # vload 1         # testing
+62 18    # aaddf 24        # &testing->arr_i
+2F       # amload          # testing->arr_i
+10 00    # bipush 0        # 0
+63       # aadds           # &testing->arr_i[0]
+2E       # imload          # testing->arr_i[0]
+B7 00 00 # invokenative 0  # printint(testing->arr_i[0])
+57       # pop             # (ignore result)
+10 01    # bipush 1        # 1
+36 02    # vstore 2        # i = 1;
+# <06:loop>
+15 02    # vload 2         # i
+10 14    # bipush 20       # 20
+A1 00 06 # if_icmplt +6    # if (i < 20) goto <07:body>
+A7 00 21 # goto +33        # goto <08:exit>
+# <07:body>
+14 00 1E # aldc 30         # s[30] = ", "
+B7 00 01 # invokenative 1  # print(", ")
+57       # pop             # (ignore result)
+15 01    # vload 1         # testing
+62 18    # aaddf 24        # &testing->arr_i
+2F       # amload          # testing->arr_i
+15 02    # vload 2         # i
+63       # aadds           # &testing->arr_i[i]
+2E       # imload          # testing->arr_i[i]
+B7 00 00 # invokenative 0  # printint(testing->arr_i[i])
+57       # pop             # (ignore result)
+15 02    # vload 2         # i
+10 01    # bipush 1        # 1
+60       # iadd            # 
+36 02    # vstore 2        # i += 1;
+A7 FF DB # goto -37        # goto <06:loop>
+# <08:exit>
+15 01    # vload 1         # testing
+62 18    # aaddf 24        # &testing->arr_i
+13 00 01 # ildc 1          # c[1] = 1000000
+BC 04    # newarray 4      # alloc_array(int, 1000000)
+4F       # amstore         # testing->arr_i = alloc_array(int, 1000000);
+15 01    # vload 1         # testing
+62 18    # aaddf 24        # &testing->arr_i
+2F       # amload          # testing->arr_i
+13 00 02 # ildc 2          # c[2] = 999999
+63       # aadds           # &testing->arr_i[999999]
+13 00 03 # ildc 3          # c[3] = 99999999
+4E       # imstore         # testing->arr_i[999999] = 99999999;
+14 00 21 # aldc 33         # s[33] = "]"
+B7 00 03 # invokenative 3  # println("]")
+57       # pop             # (ignore result)
+10 00    # bipush 0        # 0
+B0       # return          # 
+
+
+#<test>
+00 01             # number of arguments = 1
+00 01             # number of local variables = 1
+00 06             # code length = 6 bytes
+15 00    # vload 0         # x
+10 01    # bipush 1        # 1
+60       # iadd            # (x + 1)
+B0       # return          # 
+
+
+#<factorial>
+00 01             # number of arguments = 1
+00 01             # number of local variables = 1
+00 1C             # code length = 28 bytes
+15 00    # vload 0         # n
+10 00    # bipush 0        # 0
+9F 00 06 # if_cmpeq +6     # if (n == 0) goto <00:then>
+A7 00 09 # goto +9         # goto <01:else>
+# <00:then>
+10 01    # bipush 1        # 1
+B0       # return          # 
+A7 00 0F # goto +15        # goto <02:endif>
+# <01:else>
+15 00    # vload 0         # n
+15 00    # vload 0         # n
+10 01    # bipush 1        # 1
+64       # isub            # (n - 1)
+B8 00 02 # invokestatic 2  # factorial((n - 1))
+68       # imul            # (n * factorial((n - 1)))
+B0       # return          # 
+# <02:endif>
+
+00 05             # native count
+# native pool
+00 01 00 09       # printint
+00 01 00 06       # print
+00 01 00 08       # printchar
+00 01 00 0A       # println
+00 01 00 60       # string_from_chararray
+

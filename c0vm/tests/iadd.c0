@@ -1,0 +1,15 @@
+#use <conio>
+#use <string>
+
+int factorial(int n) {
+	return n == 0 ? 1 : n * factorial(n-1);
+}
+
+int main () {
+	for(int i = 1; i < 16; i++) {
+		printint(factorial(i));
+		println("");
+	}
+	println(" is the factorial of 15");
+	return 0;
+}
